@@ -1,3 +1,5 @@
+import {TetrominoL} from 'Tetrominos'
+
 export default class Tetris {
 
   constructor(canvas) {
@@ -24,12 +26,22 @@ export default class Tetris {
     this.ctx.strokeRect(scaledX,scaledY, this.scaleFactor, this.scaleFactor);
   }
 
+  insertTetromino(tetromino)
+  {
+    const xOffset = tetromino.x
+    const yOffset = tetromino.y
+
+    for (let i = 0;i < 3;i++)
+    {
+      for (let j = 0; j < 3; j++)
+      {
+        this.gameBoard[xOffset + i][yOffset + j] = tetromino.matrix[i][j]
+      }
+    }
+  }
+
   renderGameBoard()
   {
-    const rand = this.getRandomInt(0, this.columns);
-    console.log(rand);
-    this.gameBoard[0][rand] = 'B'
-
 
     const coloursMap = {
       'E':'pink',
@@ -51,17 +63,48 @@ export default class Tetris {
     }
   }
 
-
-  getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-  run()
+  gameLoop(period, endTime, counter)
   {
 
-  this.renderGameBoard()
+
+
+
+
   }
 
+  run()
+  {
+    this.renderGameBoard()
+    let tetL = new TetrominoL()
+
+    this.insertTetromino(tetL)
+    this.renderGameBoard()
+
+    tetL.rotateClockwise()
+    this.insertTetromino(tetL)
+    this.renderGameBoard()
+
+    sleep(3000)
+
+    tetL.rotateClockwise()
+    this.insertTetromino(tetL)
+    this.renderGameBoard()
+
+
+
+
+
+
+  }
+
+}
+
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
 }
 
