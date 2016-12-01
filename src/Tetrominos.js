@@ -23,6 +23,7 @@ export class Tetromino {
     }
 
     this.matrix = newArray
+    this.updateOrientation(true)
 
   }
 
@@ -42,6 +43,28 @@ export class Tetromino {
     }
 
     this.matrix = newArray
+    this.updateOrientation(false)
+  }
+
+  updateOrientation(rotatingClockwise)
+  {
+    const orientationArray = ['u','r','d','l']
+    const oldOrientation = this.orientation
+
+
+
+    if (rotatingClockwise)
+    {
+      const newOrientIndex = (orientationArray.indexOf(oldOrientation)+1) % 4;
+      this.orientation = orientationArray[newOrientIndex]
+    }
+    else
+    {
+      let newOrientIndex = (orientationArray.indexOf(oldOrientation)-1)  //% does not work on negative numbers
+      newOrientIndex === -1 ? newOrientIndex = 3 : newOrientIndex
+      this.orientation = orientationArray[newOrientIndex]
+    }
+
   }
   
 
