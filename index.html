@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="author" content="Max Kurapov">
+    <title>Tetris - ES6</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <script src="lib/Tetris.js" type="text/javascript"></script>
+</head>
+    <body>
+    <nav>
+
+    </nav>
+    <div class="wrap">
+        <canvas id="canvas" height="640" width="320"></canvas>
+
+    </div>
+
+
+    </body>
+
+    <script type="text/javascript">
+        var tetris = new Tetris(document.getElementById('canvas'))
+        tetris.run()
+    </script>
+</html>
