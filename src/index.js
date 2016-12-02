@@ -25,9 +25,9 @@ export default class Tetris {
     this.gameBoard = []; //make 10*20 game board
     this.currentTet = {}
 
-    for (let i = 0; i < this.columns; i++)
+    for (let i = 0; i < this.rows; i++)
     {
-      const rowsTemp = Array(this.rows).fill('E')
+      const rowsTemp = Array(this.columns).fill('E')
       this.gameBoard.push(rowsTemp)
     }
 
@@ -54,7 +54,7 @@ export default class Tetris {
     {
       for (let x = 0; x < this.columns; x++)
       {
-        const colourOfBlock = coloursMap[this.gameBoard[x][y]]
+        const colourOfBlock = coloursMap[this.gameBoard[y][x]]
         this.drawRect(x, y, colourOfBlock)
       }
     }
@@ -80,14 +80,18 @@ export default class Tetris {
         const boardXOffset = piece.x + x
         const boardYOffset = piece.y + y
 
-        console.log('board y: '+piece.x);
 
-        if (this.currentTet.matrix[x][y] !== 'E')
+
+        if (this.currentTet.matrix[y][x] !== 'E')
         {
+
           //try to get gameboard at board offsets, if exception, then piece is out of bounds
           try {
-            const bounds = this.gameBoard[boardXOffset][boardYOffset]
-            if (bounds !== 'E') {throw new Error('hit something')}
+            console.log('boardX: '+boardXOffset+' len: '+this.columns);
+            if (boardXOffset >= this.columns) {throw new Error('hit something')}
+            const bounds = this.gameBoard[boardYOffset][boardXOffset]
+
+            if ((bounds !== 'E')||(boardXOffset >= this.columns)) {throw new Error('hit something')}
 
           } catch (e) {
             console.log('out of index');
@@ -98,7 +102,7 @@ export default class Tetris {
       }
     }
 
-
+    console.log('------------');
 
 
     return  true
@@ -118,7 +122,7 @@ export default class Tetris {
       {
         const boardXOffset = this.currentTet.x + x
         const boardYOffset = this.currentTet.y + y
-        if (this.currentTet.matrix[x][y] !== 'E') this.gameBoard[boardXOffset][boardYOffset] = 'E'
+        if (this.currentTet.matrix[y][x] !== 'E') this.gameBoard[boardYOffset][boardXOffset] = 'E'
       }
     }
   }
@@ -135,7 +139,7 @@ export default class Tetris {
       {
         const boardXOffset = this.currentTet.x + x
         const boardYOffset = this.currentTet.y + y
-        if (this.currentTet.matrix[x][y] !== 'E') this.gameBoard[boardXOffset][boardYOffset] = this.currentTet.matrix[x][y] //inital check will make sure not out of bounds
+        if (this.currentTet.matrix[y][x] !== 'E') this.gameBoard[boardYOffset][boardXOffset] = this.currentTet.matrix[y][x] //inital check will make sure not out of bounds
 
       }
     }
@@ -159,7 +163,7 @@ export default class Tetris {
 
     //console.log(copyPiece.matrix.join('\n'));
 
-    if (this.validMove(copyPiece))  {console.log('this is valid');this.currentTet.rotate()}
+    if (this.validMove(copyPiece))  {this.currentTet.rotate()}
 
 
     this.redrawPiece()
@@ -171,7 +175,7 @@ export default class Tetris {
     const n = this.currentTet.matrix.length
     for (let i = 0;i < n;i++)
     {
-      
+
     }
   }
 
@@ -240,8 +244,9 @@ export default class Tetris {
           this.makeMove(KEY.LEFT);
           break;
       }
-
-
+    console.clear()
+    console.log(this.gameBoard.join('\n'));
+    console.log(this.gameBoard[2].length);
   }
 
   run()
@@ -251,6 +256,8 @@ export default class Tetris {
     this.currentTet = new TetrominoJ()
 
     this.insertTetromino()
+
+
      this.renderGameBoard()
 
 

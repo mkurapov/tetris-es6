@@ -19,9 +19,9 @@ export class Tetromino {
     }
 
 
-    for(let i = 0; i < n;i++) {
-        for(let j = 0; j < n; j++) {
-            newArray[i][j] = this.matrix[n - j - 1][i];
+    for(let y = 0; y < n;y++) {
+        for(let x = 0; x < n; x++) {
+            newArray[y][x] = this.matrix[n - x - 1][y];
         }
     }
 
