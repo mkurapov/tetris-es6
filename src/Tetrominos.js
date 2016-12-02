@@ -4,10 +4,10 @@ export class Tetromino {
     this.orientation = 'u'
     this.matrix = []
     this.x = 3
-    this.y = 0
+    this.y = 1
   }
 
-  rotateClockwise()
+  rotate()
   {
     const n = this.matrix.length
     let newArray = [
@@ -23,56 +23,28 @@ export class Tetromino {
     }
 
     this.matrix = newArray
-    this.updateOrientation(true)
+    this.updateOrientation()
 
   }
+  
 
-  rotateCounterClockwise()
-  {
-    const n = this.matrix.length
-    let newArray = [
-      [[],[],[]],
-      [[],[],[]],
-      [[],[],[]]
-    ]
-
-    for(let i = 0; i < n;i++) {
-      for(let j = 0; j < n; j++) {
-        newArray[i][j] = this.matrix[j][n - i - 1];
-      }
-    }
-
-    this.matrix = newArray
-    this.updateOrientation(false)
-  }
-
-  updateOrientation(rotatingClockwise)
+  updateOrientation()
   {
     const orientationArray = ['u','r','d','l']
     const oldOrientation = this.orientation
-
-
-
-    if (rotatingClockwise)
-    {
-      const newOrientIndex = (orientationArray.indexOf(oldOrientation)+1) % 4;
-      this.orientation = orientationArray[newOrientIndex]
-    }
-    else
-    {
-      let newOrientIndex = (orientationArray.indexOf(oldOrientation)-1)  //% does not work on negative numbers
-      newOrientIndex === -1 ? newOrientIndex = 3 : newOrientIndex
-      this.orientation = orientationArray[newOrientIndex]
-    }
-
+    
+    const newOrientIndex = (orientationArray.indexOf(oldOrientation)+1) % 4;
+    this.orientation = orientationArray[newOrientIndex]
   }
-  
 
   
+  moveRight(){this.x += 1}
+  moveLeft(){this.x -= 1}
+  moveDown(){this.y += 1}
+  moveUp(){this.y -= 1}
 
 
- 
-  
+
 
 }
 
@@ -82,10 +54,50 @@ export class TetrominoL extends Tetromino
     super()
     this.colour = 'B'
     this.matrix = [
-        ['B',0,0],
+        ['B','E','E'],
         ['B','B','B'],
-        [0,0,0]
+        ['E','E','E']
     ]
   }
 }
+
+export class TetrominoJ extends Tetromino
+{
+  constructor() {
+    super()
+    this.colour = 'J'
+    this.matrix = [
+      ['E','E','O'],
+      ['O','O','O'],
+      ['E','E','E']
+    ]
+  }
+}
+
+export class TetrominoZ extends Tetromino
+{
+  constructor() {
+    super()
+    this.colour = 'R'
+    this.matrix = [
+      ['R','R','E'],
+      ['E','R','R'],
+      ['E','E','E']
+    ]
+  }
+}
+
+export class TetrominoS extends Tetromino
+{
+  constructor() {
+    super()
+    this.colour = 'G'
+    this.matrix = [
+      ['E','G','G'],
+      ['G','G','E'],
+      ['E','E','E']
+    ]
+  }
+}
+
 
