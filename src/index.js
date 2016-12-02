@@ -1,4 +1,4 @@
-import {Tetromino, TetrominoL, TetrominoJ, TetrominoZ, TetrominoS} from 'Tetrominos'
+import {Tetromino, TetrominoL, TetrominoJ, TetrominoZ, TetrominoS, TetrominoI} from 'Tetrominos'
 
 const KEY     = { ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 const coloursMap = {
@@ -44,62 +44,6 @@ export default class Tetris {
     this.ctx.strokeRect(scaledX,scaledY, this.scaleFactor, this.scaleFactor);
   }
 
-  redrawPiece()
-  {
-    this.insertTetromino()
-    this.renderGameBoard()
-  }
-
-  checkEmpty(piece)
-  {
-    const xOffset = piece.x
-    const yOffset = piece.y
-    const n = piece.matrix.length
-
-    for (let y = 0; y < n; y++)
-    {
-      for (let x = 0; x < n; x++)
-      {
-        const blockXOffset = xOffset + x
-        const blockYOffset = yOffset + y
-
-        if ((blockXOffset >= this.columns) || (blockYOffset < 0) || (blockYOffset >= this.rows) || (blockXOffset < 0)) return false
-
-        let blocktoCheck = this.gameBoard[blockXOffset][blockYOffset];
-        if ((blocktoCheck !== 'E')) return false
-      }
-    }
-
-    return true
-  }
-
-  clearTetromino()
-  {
-    const xOffset = this.currentTet.x
-    const yOffset = this.currentTet.y
-
-    for (let y = 0;y < 3;y++)
-    {
-      for (let x = 0; x < 3; x++)
-      {
-        this.gameBoard[xOffset + x][yOffset + y] = 'E'
-      }
-    }
-  }
-
-  insertTetromino()
-  {
-    const xOffset = this.currentTet.x
-    const yOffset = this.currentTet.y
-
-    for (let y = 0;y < 3;y++)
-    {
-      for (let x = 0; x < 3; x++)
-      {
-        this.gameBoard[xOffset + x][yOffset + y] = this.currentTet.matrix[x][y]
-      }
-    }
-  }
 
   renderGameBoard()
   {
@@ -116,44 +60,164 @@ export default class Tetris {
     }
   }
 
-  handleRotation(rotatingClockwise)
+
+  redrawPiece()
+  {
+    this.insertTetromino()
+    this.renderGameBoard()
+  }
+
+  validMove(piece)
+  {
+
+    const n = piece.matrix.length
+
+
+    for (let y = 0;y < n;y++)
+    {
+      for (let x = 0; x < n; x++)
+      {
+        const boardXOffset = piece.x + x
+        const boardYOffset = piece.y + y
+
+        console.log('board y: '+piece.x);
+
+        if (this.currentTet.matrix[x][y] !== 'E')
+        {
+          //try to get gameboard at board offsets, if exception, then piece is out of bounds
+          try {
+            const bounds = this.gameBoard[boardXOffset][boardYOffset]
+            if (bounds !== 'E') {throw new Error('hit something')}
+
+          } catch (e) {
+            console.log('out of index');
+            return false
+          }
+        }
+
+      }
+    }
+
+
+
+
+    return  true
+
+
+
+  }
+
+
+  clearTetromino()
+  {
+    const n = this.currentTet.matrix.length
+
+    for (let y = 0;y < n;y++)
+    {
+      for (let x = 0; x < n; x++)
+      {
+        const boardXOffset = this.currentTet.x + x
+        const boardYOffset = this.currentTet.y + y
+        if (this.currentTet.matrix[x][y] !== 'E') this.gameBoard[boardXOffset][boardYOffset] = 'E'
+      }
+    }
+  }
+
+  insertTetromino()
+  {
+
+    const n = this.currentTet.matrix.length
+
+
+    for (let y = 0; y < n; y++)
+    {
+      for (let x = 0; x < n; x++)
+      {
+        const boardXOffset = this.currentTet.x + x
+        const boardYOffset = this.currentTet.y + y
+        if (this.currentTet.matrix[x][y] !== 'E') this.gameBoard[boardXOffset][boardYOffset] = this.currentTet.matrix[x][y] //inital check will make sure not out of bounds
+
+      }
+    }
+  }
+
+
+
+  handleRotation()
   {
     this.clearTetromino();
-    this.currentTet.rotate()
+
+    let copyPiece = new Tetromino()
+    copyPiece.x = this.currentTet.x
+    copyPiece.y = this.currentTet.y
+    copyPiece.matrix = this.currentTet.matrix
+    copyPiece.orientation = this.currentTet.orientation
+
+    //console.log(copyPiece.matrix.join('\n'));
+
+    copyPiece.rotate()
+
+    //console.log(copyPiece.matrix.join('\n'));
+
+    if (this.validMove(copyPiece))  {console.log('this is valid');this.currentTet.rotate()}
+
+
     this.redrawPiece()
   }
 
 
-  handleMove(movingRight)
+  checkBottom()
   {
-
-    this.clearTetromino();
-
-    if (movingRight)
+    const n = this.currentTet.matrix.length
+    for (let i = 0;i < n;i++)
     {
-      this.currentTet.moveRight()
-
-      if (!this.checkEmpty(this.currentTet)) this.currentTet.moveLeft()
-
+      
     }
-    else
-    {
-      this.currentTet.moveLeft()
-      if (!this.checkEmpty(this.currentTet)) this.currentTet.moveRight()
-
-    }
-
-    this.redrawPiece()
-
-
   }
 
-  handleDrop()
+  spawnTetromino()
+  {
+    let tet2 = new TetrominoL()
+    this.currentTet = tet2
+    this.insertTetromino()
+    this.renderGameBoard()
+  }
+
+  makeMove(direction)
   {
     this.clearTetromino()
-    this.currentTet.moveDown()
+    let copyPiece = new Tetromino()
+    copyPiece.x = this.currentTet.x
+    copyPiece.y = this.currentTet.y
+    copyPiece.matrix = this.currentTet.matrix
 
-    if (!this.checkEmpty(this.currentTet)) this.currentTet.moveUp()
+
+    switch(direction) {
+      case KEY.DOWN:
+        copyPiece.moveDown()
+        if (this.validMove(copyPiece))
+        {
+          this.checkBottom()
+          this.currentTet.moveDown()
+        }
+        else
+        {
+            this.checkRows()
+            this.spawnTetromino()
+        }
+        break;
+      case KEY.RIGHT:
+        copyPiece.moveRight()
+        if (this.validMove(copyPiece))  this.currentTet.moveRight()
+        break;
+      case KEY.LEFT:
+        copyPiece.moveLeft()
+        if (this.validMove(copyPiece))  this.currentTet.moveLeft()
+        break;
+    }
+
+
+
 
     this.redrawPiece()
   }
@@ -164,16 +228,16 @@ export default class Tetris {
   keyDown(ev) {
       switch(ev.keyCode) {
         case KEY.UP:
-          this.handleRotation(true);
+          this.handleRotation();
           break;
         case KEY.DOWN:
-          this.handleDrop();
+          this.makeMove(KEY.DOWN);
           break;
         case KEY.RIGHT:
-          this.handleMove(true);
+          this.makeMove(KEY.RIGHT);
           break;
         case KEY.LEFT:
-          this.handleMove(false);
+          this.makeMove(KEY.LEFT);
           break;
       }
 
@@ -184,10 +248,13 @@ export default class Tetris {
   {
 
 
-    this.currentTet = new TetrominoS()
+    this.currentTet = new TetrominoJ()
 
     this.insertTetromino()
      this.renderGameBoard()
+
+
+
 
 
 

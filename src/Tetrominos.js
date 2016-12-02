@@ -10,11 +10,14 @@ export class Tetromino {
   rotate()
   {
     const n = this.matrix.length
-    let newArray = [
-        [[],[],[]],
-        [[],[],[]],
-        [[],[],[]]
-    ]
+
+    let newArray = []
+    for (let i = 0; i < n; i++)
+    {
+      const rowsTemp = Array(n).fill([])
+      newArray.push(rowsTemp)
+    }
+
 
     for(let i = 0; i < n;i++) {
         for(let j = 0; j < n; j++) {
@@ -96,6 +99,20 @@ export class TetrominoS extends Tetromino
       ['E','G','G'],
       ['G','G','E'],
       ['E','E','E']
+    ]
+  }
+}
+
+export class TetrominoI extends Tetromino
+{
+  constructor() {
+    super()
+    this.colour = 'C'
+    this.matrix = [
+      ['E','E','E','E'],
+      ['C','C','C','C'],
+      ['E','E','E','E'],
+      ['E','E','E','E']
     ]
   }
 }
