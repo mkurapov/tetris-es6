@@ -1,8 +1,8 @@
-import {Tetromino, TetrominoL, TetrominoJ, TetrominoZ, TetrominoS, TetrominoI} from 'Tetrominos'
+import {Tetromino, TetrominoL, TetrominoJ, TetrominoZ, TetrominoS, TetrominoI, TetrominoO} from 'Tetrominos'
 
 const KEY     = { ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 const coloursMap = {
-  'E':'#f4eded',
+  'E':'#fafafa',
   'B':'#8CA4D4',
   'O':'#FDCDA7',
   'P':'#C2A1DA',
@@ -18,12 +18,18 @@ export default class Tetris {
 
   constructor(canvas) {
     this.canvas = canvas
-    this.ctx = canvas.getContext("2d")
-    this.scaleFactor = 39
-    this.speed = 10
-    this.gameState = 1 //1 playing, 0 over
     this.rows = 20
     this.columns = 10
+
+    this.canvas.height = window.innerHeight
+    this.canvas.width = (window.innerHeight)/2
+    this.scaleFactor = (this.canvas.height/this.rows)
+
+    this.ctx = canvas.getContext("2d")
+
+    this.speed = 10
+    this.gameState = 1 //1 playing, 0 over
+
     this.gameBoard = []; //make 10*20 game board
     this.currentTet = {}
 
@@ -34,7 +40,19 @@ export default class Tetris {
     }
 
     document.addEventListener('keydown', (ev) => this.keyDown(ev), false);
+    window.addEventListener('resize', (ev) => this.resizeCanvas(ev), false);
+
   }
+
+  resizeCanvas(ev)
+  {
+    this.canvas.height = window.innerHeight
+    this.canvas.width = (window.innerHeight)/2
+    this.scaleFactor = (this.canvas.height/this.rows)
+    this.renderGameBoard()
+  }
+
+
   drawRect(x,y, colour) {
     const scaledX = x * this.scaleFactor
     const scaledY = y * this.scaleFactor
@@ -216,9 +234,10 @@ export default class Tetris {
 
         if (filteredRow.length === 0)
         {
-          this.gameBoard.pop()
+          this.gameBoard.splice(row, 1)
           const rowsTemp = Array(this.columns).fill('E')
           this.gameBoard.unshift(rowsTemp)
+          row++
         }
 
         console.log(filteredRow);
@@ -232,7 +251,7 @@ export default class Tetris {
   {
     this.checkRows()
     console.log(this.gameBoard.join('\n'));
-    const tetrominos = [new TetrominoI(), new TetrominoJ(), new TetrominoL(), new TetrominoS(), new TetrominoZ()]
+    const tetrominos = [new TetrominoI(), new TetrominoJ(), new TetrominoL(), new TetrominoS(), new TetrominoZ(), new TetrominoO]
 
     let tet2 = tetrominos[Math.floor(Math.random()*tetrominos.length)];
     this.currentTet = tet2
