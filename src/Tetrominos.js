@@ -12,12 +12,22 @@ export class Tetromino {
     //console.log('rotating');
     const n = this.matrix.length
 
-    let newArray = []
-    for (let i = 0; i < n; i++)
-    {
-      const rowsTemp = Array(n).fill()
-      newArray.push(rowsTemp)
-    }
+    let newArray = Array(n).fill().map(()=> []);
+
+
+    // for (let i = 0; i < n; i++)
+    // {
+    //   for (let j = 0; i < n; j++)
+    //   {
+    //     newArray[i][j] = []
+    //   }
+    //
+    //
+    // }
+
+    //newArray = Array(3).fill().map(()=> []);
+
+
 
 
 
@@ -31,6 +41,8 @@ export class Tetromino {
     }
 
     this.matrix = newArray
+
+    newArray = []
     this.updateOrientation()
 
   }
@@ -136,6 +148,20 @@ export class TetrominoO extends Tetromino
   {
     // do nothing
   }
+}
+
+export class TetrominoT extends Tetromino
+{
+  constructor() {
+    super()
+    this.colour = 'P'
+    this.matrix = [
+      ['P','P','P'],
+      ['E','P','E'],
+      ['E','E','E']
+    ]
+  }
+  
 }
 
 

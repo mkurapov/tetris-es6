@@ -1,8 +1,8 @@
-import {Tetromino, TetrominoL, TetrominoJ, TetrominoZ, TetrominoS, TetrominoI, TetrominoO} from 'Tetrominos'
+import {Tetromino, TetrominoL, TetrominoJ, TetrominoZ, TetrominoS, TetrominoI, TetrominoO, TetrominoT} from 'Tetrominos'
 
 const KEY     = { ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 const coloursMap = {
-  'E':'#fafafa',
+  'E':'white',
   'B':'#8CA4D4',
   'O':'#FDCDA7',
   'P':'#C2A1DA',
@@ -27,23 +27,27 @@ export default class Tetris {
 
     this.ctx = canvas.getContext("2d")
 
-    this.speed = 10
-    this.gameState = 1 //1 playing, 0 over
+    this.speed = 4
+    this.score = 0
 
     this.gameBoard = []; //make 10*20 game board
     this.currentTet = {}
 
-    for (let i = 0; i < this.rows; i++)
-    {
-      const rowsTemp = Array(this.columns).fill('E')
-      this.gameBoard.push(rowsTemp)
-    }
+    this.resetGameBoard()
 
     document.addEventListener('keydown', (ev) => this.keyDown(ev), false);
     window.addEventListener('resize', (ev) => this.resizeCanvas(ev), false);
 
   }
 
+  resetGameBoard()
+  {
+    for (let i = 0; i < this.rows; i++)
+    {
+      const rowsTemp = Array(this.columns).fill('E')
+      this.gameBoard.push(rowsTemp)
+    }
+  }
   resizeCanvas(ev)
   {
     this.canvas.height = window.innerHeight
@@ -64,6 +68,15 @@ export default class Tetris {
     this.ctx.strokeRect(scaledX,scaledY, this.scaleFactor, this.scaleFactor);
   }
 
+  drawScore()
+  {
+    this.ctx.font = '30px Karla'
+    this.ctx.fillStyle = '#aaaaaa';
+    this.ctx.textAlign = 'left'
+    this.ctx.fillText(this.score, (this.scaleFactor*8.3), 50)
+
+  }
+
 
   renderGameBoard()
   {
@@ -78,6 +91,8 @@ export default class Tetris {
         this.drawRect(x, y, colourOfBlock)
       }
     }
+    this.drawScore()
+
   }
 
 
@@ -115,7 +130,7 @@ export default class Tetris {
             if ((bounds !== 'E')||(boardXOffset === this.columns)) {throw new Error('hit something')}
 
           } catch (e) {
-            console.log('out of index');
+            console.log(e);
             return false
           }
         }
@@ -178,13 +193,20 @@ export default class Tetris {
     copyPiece.matrix = this.currentTet.matrix
     copyPiece.orientation = this.currentTet.orientation
 
+    console.log(copyPiece);
+
    // console.log(copyPiece.matrix.join('\n'));
 
     copyPiece.rotate()
 
-   // console.log(copyPiece.matrix.join('\n'));
+    console.log(copyPiece);
 
-    if (this.validMove(copyPiece))  {this.currentTet.rotate()}
+
+    // console.log(copyPiece.matrix.join('\n'));
+
+    if (this.validMove(copyPiece))  {
+      this.currentTet.rotate()
+    }
 
 
     this.redrawPiece()
@@ -237,10 +259,9 @@ export default class Tetris {
           this.gameBoard.splice(row, 1)
           const rowsTemp = Array(this.columns).fill('E')
           this.gameBoard.unshift(rowsTemp)
+          this.score += 100
           row++
         }
-
-        console.log(filteredRow);
       }
 
     this.renderGameBoard()
@@ -250,11 +271,16 @@ export default class Tetris {
   spawnTetromino()
   {
     this.checkRows()
-    console.log(this.gameBoard.join('\n'));
-    const tetrominos = [new TetrominoI(), new TetrominoJ(), new TetrominoL(), new TetrominoS(), new TetrominoZ(), new TetrominoO]
+    this.score += 10
 
-    let tet2 = tetrominos[Math.floor(Math.random()*tetrominos.length)];
-    this.currentTet = tet2
+
+    const tetrominos = [new TetrominoI(), new TetrominoJ(), new TetrominoL(), new TetrominoS(), new TetrominoZ(), new TetrominoO(), new TetrominoT()]
+
+    let newTet = tetrominos[Math.floor(Math.random()*tetrominos.length)];
+    // if (!this.validMove(newTet)) {this.resetGameBoard()}
+
+    this.currentTet = newTet
+
     this.insertTetromino()
     this.renderGameBoard()
   }
@@ -331,26 +357,28 @@ export default class Tetris {
           this.makeMove(KEY.LEFT);
           break;
       }
-    //console.clear()
-    //console.log(this.gameBoard.join('\n'));
   }
 
   run()
   {
-
-
-    this.currentTet = new TetrominoL()
-
+    this.currentTet = new TetrominoT()
     this.insertTetromino()
-
-
     this.renderGameBoard()
 
+    window.animateLoop = () => {
 
 
+      setTimeout(() => {
+        requestAnimationFrame(animateLoop);
+
+        this.makeMove(KEY.DOWN)
+        this.renderGameBoard()
 
 
+      }, 1000 / this.speed);
+    }
 
+    animateLoop()
   }
 
 }
