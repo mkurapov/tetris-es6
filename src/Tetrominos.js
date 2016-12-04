@@ -11,17 +11,28 @@ export class Tetromino {
   {
     const n = this.matrix.length
 
+    // let newArray = []
+    // for (let i = 0; i < n; i++)
+    // {
+    //   const rowsTemp = Array(n).fill()
+    //   newArray.push(rowsTemp)
+    // }
     let newArray = []
-    for (let i = 0; i < n; i++)
-    {
-      const rowsTemp = Array(n).fill([])
-      newArray.push(rowsTemp)
-    }
+
+    newArray = [
+        [[],[],[]],
+        [[],[],[]],
+        [[],[],[]]
+    ]
+
+    console.log(newArray)
+
+
 
 
     for(let y = 0; y < n;y++) {
         for(let x = 0; x < n; x++) {
-            newArray[y][x] = this.matrix[n - x - 1][y];
+          newArray[y][x] = this.matrix[n - x - 1][y];
         }
     }
 
