@@ -1,3 +1,5 @@
 # Tetris - ES6
 
-Tetris game written in ES6 with canvas.
+Simple responsive tetris game written using ES6, and Canvas. 
+
+[Play](https://mkurapov.github.io).
