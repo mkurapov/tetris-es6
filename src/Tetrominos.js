@@ -9,30 +9,10 @@ export class Tetromino {
 
   rotate()
   {
-    //console.log('rotating');
     const n = this.matrix.length
 
     let newArray = Array(n).fill().map(()=> []);
-
-
-    // for (let i = 0; i < n; i++)
-    // {
-    //   for (let j = 0; i < n; j++)
-    //   {
-    //     newArray[i][j] = []
-    //   }
-    //
-    //
-    // }
-
-    //newArray = Array(3).fill().map(()=> []);
-
-
-
-
-
-
-
+    
 
     for(let y = 0; y < n;y++) {
         for(let x = 0; x < n; x++) {

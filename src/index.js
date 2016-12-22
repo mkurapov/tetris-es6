@@ -12,8 +12,6 @@ const coloursMap = {
   'G':'#C5D9A6'
 };
 
-// 'E':'#f4eded',
-
 export default class Tetris {
 
   constructor(canvas) {
@@ -27,7 +25,7 @@ export default class Tetris {
 
     this.ctx = canvas.getContext("2d")
 
-    this.speed = 4
+    this.speed = 3
     this.score = 0
 
     this.gameBoard = []; //make 10*20 game board
@@ -42,12 +40,16 @@ export default class Tetris {
 
   resetGameBoard()
   {
+    this.gameBoard = []
     for (let i = 0; i < this.rows; i++)
     {
       const rowsTemp = Array(this.columns).fill('E')
       this.gameBoard.push(rowsTemp)
     }
+    this.score = 0
+    this.renderGameBoard()
   }
+
   resizeCanvas(ev)
   {
     this.canvas.height = window.innerHeight
@@ -70,19 +72,15 @@ export default class Tetris {
 
   drawScore()
   {
-    this.ctx.font = '30px Karla'
+    this.ctx.font = `${this.scaleFactor*0.8}px Karla`
     this.ctx.fillStyle = '#aaaaaa';
-    this.ctx.textAlign = 'left'
-    this.ctx.fillText(this.score, (this.scaleFactor*8.3), 50)
+    this.ctx.textAlign = 'right'
+    this.ctx.fillText(this.score, (this.scaleFactor*9.3), (this.scaleFactor*1.3))
 
   }
 
-
   renderGameBoard()
   {
-
-
-
     for (let y = 0; y < this.rows; y++)
     {
       for (let x = 0; x < this.columns; x++)
@@ -92,7 +90,6 @@ export default class Tetris {
       }
     }
     this.drawScore()
-
   }
 
 
@@ -104,11 +101,7 @@ export default class Tetris {
 
   validMove(piece)
   {
-    //console.log(piece.matrix.join('\n'));
-    //console.log(piece.x);
     const n = piece.matrix.length
-
-
     for (let y = 0;y < n;y++)
     {
       for (let x = 0; x < n; x++)
@@ -116,21 +109,18 @@ export default class Tetris {
         const boardXOffset = piece.x + x
         const boardYOffset = piece.y + y
 
+        if (piece.matrix[y][x] !== 'E') {
 
-        //if (boardXOffset === this.columns) return false
-
-
-        if (this.currentTet.matrix[y][x] !== 'E')
-        {
-          //console.log('piece x: '+x+' piece y: '+y);
           //try to get gameboard at board offsets, if exception, then piece is out of bounds
           try {
             const bounds = this.gameBoard[boardYOffset][boardXOffset]
 
-            if ((bounds !== 'E')||(boardXOffset === this.columns)) {throw new Error('hit something')}
+            if ((bounds !== 'E') || (boardXOffset === this.columns)) {
+              throw new Error('hit something')
+            }
+
 
           } catch (e) {
-            console.log(e);
             return false
           }
         }
@@ -138,20 +128,13 @@ export default class Tetris {
       }
     }
 
-    //console.log('------------');
-
-
     return  true
-
-
-
   }
 
 
   clearTetromino()
   {
     const n = this.currentTet.matrix.length
-
     for (let y = 0;y < n;y++)
     {
       for (let x = 0; x < n; x++)
@@ -165,10 +148,7 @@ export default class Tetris {
 
   insertTetromino()
   {
-
     const n = this.currentTet.matrix.length
-
-
     for (let y = 0; y < n; y++)
     {
       for (let x = 0; x < n; x++)
@@ -193,23 +173,14 @@ export default class Tetris {
     copyPiece.matrix = this.currentTet.matrix
     copyPiece.orientation = this.currentTet.orientation
 
-    console.log(copyPiece);
-
-   // console.log(copyPiece.matrix.join('\n'));
-
     copyPiece.rotate()
 
-    console.log(copyPiece);
-
-
-    // console.log(copyPiece.matrix.join('\n'));
-
-    if (this.validMove(copyPiece))  {
+    if ((this.validMove(copyPiece)) && (this.bottomEmpty(copyPiece))){
       this.currentTet.rotate()
     }
 
-
     this.redrawPiece()
+
   }
 
 
@@ -231,11 +202,9 @@ export default class Tetris {
           //try to get gameboard at board offsets, if exception, then piece is out of bounds
           try {
             const bounds = this.gameBoard[boardYOffsetBelow][boardXOffset]
-            //console.log(boardYOffsetBelow);
             if (bounds !== 'E') return false
 
           } catch (e) {
-            console.log('out of index');
             return false
           }
         }
@@ -267,22 +236,21 @@ export default class Tetris {
     this.renderGameBoard()
   }
 
-
   spawnTetromino()
   {
     this.checkRows()
     this.score += 10
 
-
     const tetrominos = [new TetrominoI(), new TetrominoJ(), new TetrominoL(), new TetrominoS(), new TetrominoZ(), new TetrominoO(), new TetrominoT()]
 
     let newTet = tetrominos[Math.floor(Math.random()*tetrominos.length)];
-    // if (!this.validMove(newTet)) {this.resetGameBoard()}
+    if (!this.validMove(newTet)) {
+      this.resetGameBoard()
+    }
 
     this.currentTet = newTet
 
     this.insertTetromino()
-    this.renderGameBoard()
   }
 
   makeMove(direction)
@@ -293,7 +261,6 @@ export default class Tetris {
     copyPiece.y = this.currentTet.y
     copyPiece.matrix = this.currentTet.matrix
 
-
     switch(direction) {
       case KEY.DOWN:
         copyPiece.moveDown()
@@ -301,18 +268,6 @@ export default class Tetris {
         if (this.validMove(copyPiece))
         {
           this.currentTet.moveDown()
-          if (!this.bottomEmpty(copyPiece))
-          {
-            this.insertTetromino()
-            this.spawnTetromino()
-          }
-          else
-          {
-            this.redrawPiece()
-          }
-
-        //  console.log(this.gameBoard.join('\n'));
-
         }
 
         break;
@@ -321,7 +276,6 @@ export default class Tetris {
         if (this.validMove(copyPiece))
         {
           this.currentTet.moveRight()
-          this.redrawPiece()
         }
         break;
       case KEY.LEFT:
@@ -329,13 +283,19 @@ export default class Tetris {
         if (this.validMove(copyPiece))
         {
           this.currentTet.moveLeft()
-          this.redrawPiece()
         }
         break;
     }
 
-
-
+    if (!this.bottomEmpty(this.currentTet))
+    {
+      this.insertTetromino()
+      this.spawnTetromino()
+    }
+    else
+    {
+      this.redrawPiece()
+    }
 
   }
 
@@ -361,10 +321,12 @@ export default class Tetris {
 
   run()
   {
-    this.currentTet = new TetrominoT()
-    this.insertTetromino()
-    this.renderGameBoard()
+    this.currentTet = new TetrominoL()
 
+    this.insertTetromino()
+
+
+    this.renderGameBoard()
     window.animateLoop = () => {
 
 
